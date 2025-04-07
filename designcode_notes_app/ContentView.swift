@@ -4,14 +4,15 @@ struct Note: Identifiable {
     let id = UUID()
     var title: String
     var content: String
+    var location: String
     var date: Date
 }
 
 class NotesViewModel: ObservableObject {
     @Published var notes: [Note] = []
 
-    func addNote(title: String, content: String) {
-        let note = Note(title: title, content: content, date: Date())
+    func addNote(title: String, content: String, location: String) {
+        let note = Note(title: title, content: content, location: location, date: Date())
         notes.append(note)
     }
 
@@ -25,6 +26,7 @@ struct ContentView: View {
     @State private var showingNewNoteSheet = false
     @State private var newNoteTitle = ""
     @State private var newNoteContent = ""
+    @State private var newNoteLocation = ""
 
     // Custom colors
     private let accentColor = Color(red: 0.2, green: 0.5, blue: 0.9)
@@ -64,6 +66,13 @@ struct ContentView: View {
                                     .font(.body)
                                     .foregroundColor(secondaryTextColor)
                                     .lineLimit(2)
+                                HStack {
+                                    Image(systemName: "location.fill")
+                                        .foregroundColor(accentColor)
+                                    Text(note.location)
+                                        .font(.caption)
+                                        .foregroundColor(accentColor)
+                                }
                                 Text(note.date, style: .date)
                                     .font(.caption)
                                     .foregroundColor(accentColor)
@@ -92,6 +101,9 @@ struct ContentView: View {
                         TextField("Title", text: $newNoteTitle)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .foregroundColor(textColor)
+                        TextField("Location", text: $newNoteLocation)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .foregroundColor(textColor)
                         TextEditor(text: $newNoteContent)
                             .frame(height: 200)
                             .foregroundColor(textColor)
@@ -102,14 +114,16 @@ struct ContentView: View {
                             showingNewNoteSheet = false
                             newNoteTitle = ""
                             newNoteContent = ""
+                            newNoteLocation = ""
                         }
                         .foregroundColor(accentColor),
                         trailing: Button("Save") {
                             if !newNoteTitle.isEmpty {
-                                viewModel.addNote(title: newNoteTitle, content: newNoteContent)
+                                viewModel.addNote(title: newNoteTitle, content: newNoteContent, location: newNoteLocation)
                                 showingNewNoteSheet = false
                                 newNoteTitle = ""
                                 newNoteContent = ""
+                                newNoteLocation = ""
                             }
                         }
                         .disabled(newNoteTitle.isEmpty)
